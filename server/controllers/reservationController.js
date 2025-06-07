@@ -14,22 +14,29 @@ exports.createReservation = async (req, res) => {
 
 exports.getReservations = async (req, res) => {
   try {
-    // Parse query params with default values
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const status = req.query.status;
 
-    // Get total count
-    const total = await Reservation.count();
+    // Build filter object
+    const where = {};
+    if (status && status !== "all") {
+      where.status = status;
+    }
 
-    // Fetch paginated data
+    // Count filtered records
+    const total = await Reservation.count({ where });
+
+    // Fetch paginated & filtered records
     const data = await Reservation.findAll({
+      where,
       order: [["createdAt", "DESC"]],
       limit,
       offset,
     });
 
-    // Add pdfUrl if status === "confirmed"
+    // Append pdfUrl if status is confirmed
     const withPdfUrl = data.map((reservation) => {
       const resJson = reservation.toJSON();
       if (resJson.status === "confirmed") {

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar } from "lucide-react";
 import api from "@/lib/axios";
 import PaginationControls from "./PaginationControls";
 import ReservationCard from "../components/ReservationCard";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarX } from "lucide-react";
 
 export default function AdminReservationTable() {
   const [reservations, setReservations] = useState([]);
@@ -13,15 +14,23 @@ export default function AdminReservationTable() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [confirmingId, setConfirmingId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     const fetchReservations = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/reservations?page=${page}&limit=${limit}`);
-        const json = res.data; // ✅ Axios already returns parsed data
-        setReservations(json.data);
-        setTotalPages(Math.ceil(json.total / limit));
+        const params = new URLSearchParams({
+          page,
+          limit,
+        });
+        if (statusFilter !== "all") {
+          params.append("status", statusFilter);
+        }
+
+        const res = await api.get(`/reservations?${params.toString()}`);
+        setReservations(res.data.data);
+        setTotalPages(Math.ceil(res.data.total / limit));
       } catch (err) {
         console.error("Error fetching reservations", err);
       } finally {
@@ -30,7 +39,7 @@ export default function AdminReservationTable() {
     };
 
     fetchReservations();
-  }, [page, limit]);
+  }, [page, limit, statusFilter]);
 
   const updateStatus = async (id, status) => {
     try {
@@ -84,16 +93,6 @@ export default function AdminReservationTable() {
     );
   }
 
-  if (reservations.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-500">
-        <Calendar className="w-12 h-12 mb-4" />
-        <p className="text-lg">No reservations yet</p>
-        <p className="text-sm">New reservations will appear here</p>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-full p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
@@ -105,22 +104,48 @@ export default function AdminReservationTable() {
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {reservations.map((res) => (
-          <ReservationCard
-            key={res.id}
-            reservation={res}
-            confirmingId={confirmingId}
-            updateStatus={updateStatus}
-            sendWhatsAppMessage={sendWhatsAppMessage}
+      <Tabs
+        value={statusFilter}
+        onValueChange={(val) => {
+          setStatusFilter(val);
+          setPage(1); // reset to page 1
+        }}
+        className="mb-4"
+      >
+        <TabsList>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
+          <TabsTrigger value="rejected">Rejected</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {reservations.length === 0 ? (
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-500">
+          <CalendarX className="w-16 h-16 mb-4" />
+          <p className="text-lg">No reservations found</p>
+          <p className="text-sm">Try changing the filter or check back later</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            {reservations.map((res) => (
+              <ReservationCard
+                key={res.id}
+                reservation={res}
+                confirmingId={confirmingId}
+                updateStatus={updateStatus}
+                sendWhatsAppMessage={sendWhatsAppMessage}
+              />
+            ))}
+          </div>
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            onPageChange={(newPage) => setPage(newPage)}
           />
-        ))}
-      </div>
-      <PaginationControls
-        page={page}
-        totalPages={totalPages}
-        onPageChange={(newPage) => setPage(newPage)}
-      />
+        </>
+      )}
     </div>
   );
 }
