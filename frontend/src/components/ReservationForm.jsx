@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, CheckCircle } from "lucide-react";
 import { formatDate } from "@/lib/formatDate";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -252,26 +252,23 @@ export default function ReservationForm() {
       </div>
 
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-lg px-6 py-10">
-          <DialogHeader className="space-y-6">
-            <DialogTitle className="text-3xl font-extrabold text-center text-gray-900">
+        <DialogContent className="sm:max-w-md px-6 py-10">
+          <DialogHeader className="space-y-4 text-center">
+            <CheckCircle className="mx-auto text-green-600" size={48} />
+
+            <DialogTitle className="text-2xl font-bold text-green-700">
               Reservation Received
             </DialogTitle>
-            <DialogDescription className="text-center space-y-6">
-              <div className="space-y-4">
-                <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                  Thank you for choosing <strong>JA'AN Restaurant</strong>. Your
-                  reservation request has been received successfully.
-                </p>
-                <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                  Our team is reviewing your request and will reach out via
-                  WhatsApp with a confirmation shortly.
-                </p>
-                <p className="text-gray-800 text-base sm:text-lg font-semibold leading-relaxed">
-                  We look forward to providing you with a memorable dining
-                  experience.
-                </p>
-              </div>
+
+            <DialogDescription className="text-gray-600 text-base sm:text-lg space-y-4">
+              <p>
+                Thank you for reserving at <strong>JA'AN Restaurant</strong>.
+              </p>
+              <p>
+                We’ve got your request and will reach out on WhatsApp shortly to
+                confirm.
+              </p>
+              <p className="font-semibold text-gray-800">See you soon!</p>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

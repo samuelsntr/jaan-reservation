@@ -19,7 +19,7 @@ export default function DatePopover({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={`justify-start w-full ${date ? "md:w-auto" : "md:w-40"}`}
+          className={`justify-start w-34 ${date ? "md:w-auto" : "md:w-34"}`}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? formatDate(date) : label || placeholder}

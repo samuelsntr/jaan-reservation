@@ -11,6 +11,9 @@ import {
   Check,
   X,
   Loader2,
+  CheckCircle,
+  XCircle,
+  HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/formatDate"; // or wherever your date util is
@@ -23,16 +26,36 @@ export default function ReservationCard({
 }) {
   const res = reservation;
 
-  const getStatusColor = (status) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case "confirmed":
-        return "bg-green-100 text-green-800";
+        return (
+          <Badge className="bg-green-100 text-green-800 ml-2">
+            <CheckCircle className="w-4 h-4" />
+            Confirmed
+          </Badge>
+        );
       case "rejected":
-        return "bg-red-100 text-red-800";
+        return (
+          <Badge variant="destructive" className="bg-red-100 text-red-800 ml-2">
+            <XCircle className="w-4 h-4" />
+            Rejected
+          </Badge>
+        );
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 ml-2">
+            <Clock className="w-4 h-4" />
+            Pending
+          </Badge>
+        );
       default:
-        return "bg-gray-100 text-gray-800";
+        return (
+          <Badge className="bg-gray-100 text-gray-800 ml-2">
+            <HelpCircle className="w-4 h-4" />
+            Unknown
+          </Badge>
+        );
     }
   };
 
@@ -45,9 +68,7 @@ export default function ReservationCard({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold text-gray-900">{res.name}</h3>
-            <Badge className={`ml-2 ${getStatusColor(res.status)}`}>
-              {res.status.toUpperCase()}
-            </Badge>
+            {getStatusBadge(res.status)}
           </div>
 
           <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
