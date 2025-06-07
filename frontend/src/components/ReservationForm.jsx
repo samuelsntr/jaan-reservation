@@ -132,6 +132,7 @@ export default function ReservationForm() {
               value={form.pax}
               onChange={handleChange}
               className="h-11"
+              min="1"
             />
           </div>
           <div className="space-y-2">
