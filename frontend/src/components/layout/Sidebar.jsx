@@ -58,8 +58,8 @@ export default function Sidebar() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [sectionStates, setSectionStates] = useState({
-    general: false,
-    settings: false,
+    general: true,
+    settings: true,
   });
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export default function Sidebar() {
       <div>
         <div className="flex items-center justify-between p-4 border-b">
           {!collapsed && (
-            <span className="text-xl font-bold text-[#612c06]">
+            <span className="text-xl font-bold">
               {user?.role === "admin" ? "Admin Panel" : "Dashboard"}
             </span>
           )}

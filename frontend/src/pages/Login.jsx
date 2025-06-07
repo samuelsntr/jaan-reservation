@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/axios";
 import { toast } from "sonner";
-import backgroundImage from "@/assets/abisena.png";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -47,13 +46,10 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center p-4"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center p-4">
       <div className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-6 text-[#612c06] drop-shadow">
-          Abisena Logbook
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Jaan Reservation
         </h1>
 
         {errorMessage && (
@@ -88,7 +84,7 @@ export default function Login() {
 
           <Button
             type="submit"
-            className="w-full bg-[#612c06] hover:bg-[#a0512d] text-white font-semibold"
+            className="w-full font-semibold"
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
