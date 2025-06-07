@@ -8,6 +8,10 @@ const db = require('./models');
 const reservationRoutes = require('./routes/reservation');
 const app = express();
 const path = require("path");
+const httpServer = require("http").createServer(app);
+const { initSocket } = require("./utils/socket");
+
+initSocket(httpServer);
 
 // Konfigurasi express-session
 app.use(session({
@@ -43,4 +47,4 @@ db.sequelize.sync({ alter: false }).then(() => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));

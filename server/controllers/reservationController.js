@@ -1,11 +1,14 @@
 const { Reservation } = require("../models");
-const generateReservationPdf = require("../utils/generateReservationPdf"); // import utility
+const generateReservationPdf = require("../utils/generateReservationPdf");
 const path = require("path");
 require('dotenv').config();
+const { Op } = require("sequelize");
+const { emitNewReservation } = require("../utils/socket");
 
 exports.createReservation = async (req, res) => {
   try {
     const data = await Reservation.create(req.body);
+    emitNewReservation(data);
     res.status(201).json(data);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -18,17 +21,31 @@ exports.getReservations = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const status = req.query.status;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
 
-    // Build filter object
     const where = {};
+
     if (status && status !== "all") {
       where.status = status;
     }
 
-    // Count filtered records
+    if (startDate && endDate) {
+      where.date = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    } else if (startDate) {
+      where.date = {
+        [Op.gte]: new Date(startDate),
+      };
+    } else if (endDate) {
+      where.date = {
+        [Op.lte]: new Date(endDate),
+      };
+    }
+
     const total = await Reservation.count({ where });
 
-    // Fetch paginated & filtered records
     const data = await Reservation.findAll({
       where,
       order: [["createdAt", "DESC"]],
@@ -36,7 +53,6 @@ exports.getReservations = async (req, res) => {
       offset,
     });
 
-    // Append pdfUrl if status is confirmed
     const withPdfUrl = data.map((reservation) => {
       const resJson = reservation.toJSON();
       if (resJson.status === "confirmed") {
