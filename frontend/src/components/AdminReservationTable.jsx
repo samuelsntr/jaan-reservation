@@ -113,17 +113,19 @@ export default function AdminReservationTable() {
           </Badge>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start gap-4">
           <div className="flex gap-4">
             <DatePopover
               label="Start Date"
               date={startDate}
               onChange={setStartDate}
+              className="w-full sm:w-auto"
             />
             <DatePopover
               label="End Date"
               date={endDate}
               onChange={setEndDate}
+              className="w-full sm:w-auto"
             />
           </div>
 
@@ -137,7 +139,7 @@ export default function AdminReservationTable() {
                 setStatusFilter("all");
                 setPage(1);
               }}
-              className="flex items-center gap-2"
+              className="flex gap-2 w-full sm:w-auto"
             >
               <CalendarX className="h-4 w-4" />
               Clear Filters
