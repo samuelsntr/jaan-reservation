@@ -1,4 +1,4 @@
-# 📆 Reservation Management Dashboard
+# 📆 Jaan Reservation Management
 
 A modern full-stack reservation management dashboard built with **React**, **ShadCN UI**, **Lucide Icons**, **Express.js**, and **MySQL**. Designed for restaurants, studios, or service-based businesses that need real-time booking management, notifications, reporting, and more.
 
@@ -33,16 +33,34 @@ A modern full-stack reservation management dashboard built with **React**, **Sha
 ├── prisma/ or migrations/ # (optional) DB schema & migrations
 └── README.md
 
-## 🚀 Getting Started
+## 🛠️ Tech Stack
 
-### Backend Setup
+| Layer     | Technology                     |
+|-----------|--------------------------------|
+| Frontend  | React, Vite, Shadcn UI         |
+| Backend   | Express.js, Sequelize ORM      |
+| Database  | MySQL                          |
+| Realtime  | Socket.IO                      |
+| Styling   | Tailwind CSS, Lucide Icons     |
+| Exporting | ExcelJS, pdf-lib               |
+
+---
+
+## 🧪 Installation & Setup
+
+### 1️⃣ Clone the repository
 
 ```bash
-cd backend
+git clone https://github.com/yourusername/reservation-dashboard.git
+cd reservation-dashboard
+
+cd server
 npm install
-cp .env.example .env     # Set your DB credentials and PORT
-npm run dev              # Start development server
+cp .env.example .env
+# Fill in your database credentials
+npx sequelize db:migrate
+npm run dev
 
 cd frontend
 npm install
-npm run dev              # Vite dev server
+npm run dev
