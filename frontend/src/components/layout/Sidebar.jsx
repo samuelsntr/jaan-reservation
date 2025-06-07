@@ -1,152 +1,130 @@
-import { useEffect, useState } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Home, Calendar, Users, LogOut } from "lucide-react";
 import {
-  Home,
-  UserCog,
-  LogOut,
-  Menu,
-  X,
-  ChevronDown,
-  ChevronRight,
-  ClipboardCheck,
-} from "lucide-react";
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"; // Assuming these are well-designed UI components
+
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
 
-const sectionMap = {
-  "/dashboard": "general",
-  "/user": "settings",
-  "/reservation-table": "settings",
-};
+// Define navigation items
+const primaryNavigation = [
+  {
+    title: "Dashboard",
+    icon: Home,
+    url: "/dashboard",
+  },
+  {
+    title: "Reservations",
+    icon: Calendar,
+    url: "/reservation-table",
+  },
+];
 
-function SidebarSection({
-  id,
-  title,
-  children,
-  sectionStates,
-  setSectionStates,
-  collapsed,
-}) {
-  const isOpen = sectionStates[id];
-  const toggleSection = () => {
-    setSectionStates((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+const adminNavigation = [
+  {
+    title: "User Management",
+    icon: Users,
+    url: "/user",
+  },
+];
 
-  return (
-    <div className="mb-2">
-      <button
-        onClick={toggleSection}
-        className={`flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-500 uppercase w-full hover:bg-gray-100 transition ${
-          collapsed ? "justify-center" : ""
-        }`}
-      >
-        {!collapsed && title}
-        {!collapsed &&
-          (isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />)}
-      </button>
-      {isOpen && !collapsed && (
-        <div className="flex flex-col gap-1 mt-1">{children}</div>
-      )}
-    </div>
-  );
-}
-
-export default function Sidebar() {
+export function AppSidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const [collapsed, setCollapsed] = useState(false);
-  const [sectionStates, setSectionStates] = useState({
-    general: true,
-    settings: true,
-  });
-
-  useEffect(() => {
-    const currentPath = Object.keys(sectionMap).find((key) =>
-      location.pathname.startsWith(key)
-    );
-    if (currentPath) {
-      const section = sectionMap[currentPath];
-      setSectionStates((prev) => ({ ...prev, [section]: true }));
-    }
-  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-      isActive
-        ? "bg-[#f0eae7] text-[#612c06]"
-        : "text-gray-700 hover:bg-[#f5f1ef]"
-    }`;
-
   return (
-    <aside
-      className={`${
-        collapsed ? "w-16" : "w-64"
-      } bg-white border-r shadow-sm flex flex-col justify-between h-screen transition-all duration-300`}
-    >
-      <div>
-        <div className="flex items-center justify-between p-4 border-b">
-          {!collapsed && (
-            <span className="text-xl font-bold">
-              {user?.role === "admin" ? "Admin Panel" : "Dashboard"}
-            </span>
-          )}
-          <button
-            onClick={() => setCollapsed((prev) => !prev)}
-            className="text-gray-500 hover:text-gray-800"
-          >
-            {collapsed ? <Menu size={20} /> : <X size={20} />}
-          </button>
-        </div>
+    <Sidebar className="h-screen flex flex-col">
+      <SidebarContent className="flex-grow">
+        {/* Application Navigation */}
+        <SidebarGroup>
+          <SidebarGroupLabel>General</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {primaryNavigation.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                         ${
+                           isActive
+                             ? "bg-primary text-primary-foreground"
+                             : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                         }`
+                      }
+                    >
+                      <item.icon className="h-5 w-5" />{" "}
+                      {/* Slightly larger icons */}
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-        <nav className="flex flex-col gap-2 p-3 text-sm">
-          <SidebarSection
-            id="general"
-            title="General"
-            sectionStates={sectionStates}
-            setSectionStates={setSectionStates}
-            collapsed={collapsed}
-          >
-            <NavLink to="/dashboard" className={linkClass}>
-              <Home size={18} /> {!collapsed && "Dashboard"}
-            </NavLink>
-            <NavLink to="/reservation-table" className={linkClass}>
-              <ClipboardCheck size={18} /> {!collapsed && "Reservations"}
-            </NavLink>
-          </SidebarSection>
+        {/* Admin Navigation (conditionally rendered) */}
+        {user?.role === "admin" && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Administration</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminNavigation.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.url}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                           ${
+                             isActive
+                               ? "bg-primary text-primary-foreground"
+                               : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                           }`
+                        }
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+      </SidebarContent>
 
-          {user?.role === "admin" && (
-            <SidebarSection
-              id="settings"
-              title="Settings"
-              sectionStates={sectionStates}
-              setSectionStates={setSectionStates}
-              collapsed={collapsed}
+      {/* Logout Button */}
+      <div className="p-4 border-t border-border mt-auto">
+        {" "}
+        {/* Added border-border for theme compatibility */}
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className="w-full flex items-center gap-3 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg px-3 py-2 transition-colors"
+              onClick={handleLogout}
             >
-              <NavLink to="/user" className={linkClass}>
-                <UserCog size={18} /> {!collapsed && "User Management"}
-              </NavLink>
-            </SidebarSection>
-          )}
-        </nav>
+              <LogOut className="h-5 w-5" />
+              <span>Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </div>
-
-      <div className="p-4 border-t">
-        <Button
-          onClick={handleLogout}
-          variant="outline"
-          className="w-full flex items-center gap-2 justify-center text-red-600 border-red-200 hover:bg-red-50"
-        >
-          <LogOut size={18} />
-          {!collapsed && "Logout"}
-        </Button>
-      </div>
-    </aside>
+    </Sidebar>
   );
 }
