@@ -40,7 +40,7 @@ export default function PaginationControls({ page, totalPages, onPageChange }) {
   }
 
   return (
-    <div className="mt-4">
+    <div>
       <Pagination>
         <PaginationContent>
           <PaginationItem>

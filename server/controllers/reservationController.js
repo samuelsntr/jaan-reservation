@@ -14,8 +14,22 @@ exports.createReservation = async (req, res) => {
 
 exports.getReservations = async (req, res) => {
   try {
-    const data = await Reservation.findAll({ order: [["createdAt", "DESC"]] });
+    // Parse query params with default values
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
 
+    // Get total count
+    const total = await Reservation.count();
+
+    // Fetch paginated data
+    const data = await Reservation.findAll({
+      order: [["createdAt", "DESC"]],
+      limit,
+      offset,
+    });
+
+    // Add pdfUrl if status === "confirmed"
     const withPdfUrl = data.map((reservation) => {
       const resJson = reservation.toJSON();
       if (resJson.status === "confirmed") {
@@ -24,7 +38,12 @@ exports.getReservations = async (req, res) => {
       return resJson;
     });
 
-    res.json(withPdfUrl);
+    res.json({
+      data: withPdfUrl,
+      total,
+      page,
+      limit,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
