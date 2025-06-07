@@ -9,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { CalendarIcon, Clock } from "lucide-react";
+import { formatDate } from "@/lib/formatDate";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -19,6 +19,13 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "sonner";
 import api from "@/lib/axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function ReservationForm() {
   const [form, setForm] = useState({
@@ -28,10 +35,13 @@ export default function ReservationForm() {
     tableType: "",
     time: "",
     date: null,
+    floor: "", // Added floor field
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const tableOptions = ["Table 4 pax", "Table 6 pax", "Sofa 6-10 pax", "Bar"];
+  const floorOptions = ["First Floor", "Second Floor", "Third Floor"]; // Added floor options
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -46,7 +56,8 @@ export default function ReservationForm() {
       !form.phoneNumber ||
       !form.time ||
       !form.tableType ||
-      !form.pax
+      !form.pax ||
+      !form.floor // Added floor validation
     ) {
       toast.warning("Please fill in all fields.");
       return;
@@ -56,10 +67,10 @@ export default function ReservationForm() {
       setSubmitting(true);
       await api.post("/reservations", {
         ...form,
-        date: format(form.date, "yyyy-MM-dd"),
+        date: formatDate(form.date),
         pax: parseInt(form.pax),
       });
-      toast.success("Reservation submitted!");
+      setShowSuccessDialog(true);
       setForm({
         name: "",
         phoneNumber: "",
@@ -67,6 +78,7 @@ export default function ReservationForm() {
         tableType: "",
         time: "",
         date: null,
+        floor: "", // Reset floor field
       });
     } catch (err) {
       console.log(err);
@@ -127,16 +139,16 @@ export default function ReservationForm() {
               Time
             </Label>
             <Input
+              type="time"
               name="time"
               value={form.time}
               onChange={handleChange}
-              placeholder="e.g. 19:00"
               className="h-11"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-3">
           <div className="space-y-2">
             <Label htmlFor="tableType" className="text-sm font-medium">
               Table Type
@@ -159,6 +171,30 @@ export default function ReservationForm() {
             </Select>
           </div>
           <div className="space-y-2">
+            <Label htmlFor="floor" className="text-sm font-medium">
+              Floor
+            </Label>
+            <Select
+              name="floor"
+              value={form.floor}
+              onValueChange={(value) => setForm({ ...form, floor: value })}
+            >
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Select Floor" />
+              </SelectTrigger>
+              <SelectContent>
+                {floorOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="space-y-2">
             <Label htmlFor="date" className="text-sm font-medium">
               Date
             </Label>
@@ -169,11 +205,7 @@ export default function ReservationForm() {
                   className="w-full h-11 justify-start text-left font-normal"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {form.date ? (
-                    format(form.date, "PPP")
-                  ) : (
-                    <span>Select date</span>
-                  )}
+                  {form.date ? formatDate(form.date) : <span>Select date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -218,6 +250,32 @@ export default function ReservationForm() {
           </li>
         </ul>
       </div>
+
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-lg px-6 py-10">
+          <DialogHeader className="space-y-6">
+            <DialogTitle className="text-3xl font-extrabold text-center text-gray-900">
+              Reservation Received
+            </DialogTitle>
+            <DialogDescription className="text-center space-y-6">
+              <div className="space-y-4">
+                <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+                  Thank you for choosing <strong>JA'AN Restaurant</strong>. Your
+                  reservation request has been received successfully.
+                </p>
+                <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+                  Our team is reviewing your request and will reach out via
+                  WhatsApp with a confirmation shortly.
+                </p>
+                <p className="text-gray-800 text-base sm:text-lg font-semibold leading-relaxed">
+                  We look forward to providing you with a memorable dining
+                  experience.
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
