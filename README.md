@@ -30,7 +30,6 @@ A modern full-stack reservation management dashboard built with **React**, **Sha
 │ ├── socket.js # WebSocket setup
 │ └── server.js # Entry point
 ├── public/ # Static assets (e.g., notif sounds)
-├── prisma/ or migrations/ # (optional) DB schema & migrations
 └── README.md
 
 ## 🛠️ Tech Stack
@@ -51,16 +50,17 @@ A modern full-stack reservation management dashboard built with **React**, **Sha
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/reservation-dashboard.git
-cd reservation-dashboard
+git clone https://github.com/samuelsntr/jaan-reservation.git
+cd jaan-reservation
 
+# Backend setup
 cd server
 npm install
 cp .env.example .env
 # Fill in your database credentials
-npx sequelize db:migrate
 npm run dev
 
+# Frontend setup
 cd frontend
 npm install
 npm run dev
