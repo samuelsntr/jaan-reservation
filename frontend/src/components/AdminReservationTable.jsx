@@ -6,8 +6,12 @@ import PaginationControls from "./PaginationControls";
 import ReservationCard from "../components/ReservationCard";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarX } from "lucide-react";
+import DatePopover from "./DatePopover";
+import { Button } from "@/components/ui/button";
+import { useReservationRefresh } from "@/contexts/ReservationRefreshContext";
 
 export default function AdminReservationTable() {
+  const { refreshCount } = useReservationRefresh();
   const [reservations, setReservations] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10); // Fixed per page
@@ -15,6 +19,8 @@ export default function AdminReservationTable() {
   const [loading, setLoading] = useState(false);
   const [confirmingId, setConfirmingId] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -27,6 +33,8 @@ export default function AdminReservationTable() {
         if (statusFilter !== "all") {
           params.append("status", statusFilter);
         }
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
 
         const res = await api.get(`/reservations?${params.toString()}`);
         setReservations(res.data.data);
@@ -39,7 +47,7 @@ export default function AdminReservationTable() {
     };
 
     fetchReservations();
-  }, [page, limit, statusFilter]);
+  }, [page, limit, statusFilter, startDate, endDate, refreshCount]);
 
   const updateStatus = async (id, status) => {
     try {
@@ -94,14 +102,48 @@ export default function AdminReservationTable() {
   }
 
   return (
-    <div className="max-w-full p-4 sm:p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Reservation Management
-        </h2>
-        <Badge variant="outline" className="text-sm">
-          {reservations.length} Total Reservations
-        </Badge>
+    <div className="max-w-full">
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Reservation Management
+          </h2>
+          <Badge variant="outline" className="text-sm">
+            {reservations.length} Total Reservations
+          </Badge>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex gap-4">
+            <DatePopover
+              label="Start Date"
+              date={startDate}
+              onChange={setStartDate}
+            />
+            <DatePopover
+              label="End Date"
+              date={endDate}
+              onChange={setEndDate}
+            />
+          </div>
+
+          {(startDate || endDate || statusFilter !== "all") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setStartDate(null);
+                setEndDate(null);
+                setStatusFilter("all");
+                setPage(1);
+              }}
+              className="flex items-center gap-2"
+            >
+              <CalendarX className="h-4 w-4" />
+              Clear Filters
+            </Button>
+          )}
+        </div>
       </div>
 
       <Tabs
