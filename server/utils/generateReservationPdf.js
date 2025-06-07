@@ -4,7 +4,11 @@ const path = require("path");
 
 const generateReservationPdf = (reservation) => {
   const doc = new PDFDocument({ margin: 50 });
-  const filename = `reservation-${reservation.id}.pdf`;
+
+  const formattedDate = reservation.date.replace(/-/g, ""); // e.g., 20250606
+  const tableCode = reservation.tableType.toUpperCase().replace(/\s+/g, "");
+  const reservationCode = `${formattedDate}-PAX${reservation.pax}-${tableCode}`;
+  const filename = `reservation-${reservation.name}-${reservationCode}.pdf`;
   const filePath = path.join(__dirname, "..", "pdfs", filename);
 
   if (!fs.existsSync(path.dirname(filePath))) {
@@ -14,8 +18,8 @@ const generateReservationPdf = (reservation) => {
   const stream = fs.createWriteStream(filePath);
   doc.pipe(stream);
 
-  // === Logo and Branding ===
-  const logoPath = path.join(__dirname, "..", "assets", "jaan-logo.png"); // Replace with actual path
+  // === Branding & Header ===
+  const logoPath = path.join(__dirname, "..", "assets", "jaan-logo.png");
   if (fs.existsSync(logoPath)) {
     doc.image(logoPath, 50, 45, { width: 60 });
   }
@@ -23,80 +27,87 @@ const generateReservationPdf = (reservation) => {
   doc
     .fontSize(20)
     .fillColor("#222")
-    .text("JA'AN Restaurant", 120, 50, { align: "left" })
+    .text("JA'AN Restaurant", 120, 50)
     .fontSize(10)
     .fillColor("#666")
-    .text("Jl. Sudirman No.123, Jakarta", 120, 75)
-    .text("Phone: +62 812-3456-7890", 120, 90)
-    .text("Instagram: @jaan.restaurant", 120, 105);
+    .text("Jl. Raya Seminyak No.10, Seminyak, Kec. Kuta, Kabupaten Badung, Bali 80361", 120, 75)
+    .text("Phone: +62 819-1900-1818", 120, 90)
+    .text("Instagram: @jaanbali", 120, 105);
 
   doc.moveDown(2);
 
-  // === Title Section ===
+  // === Title ===
   doc
-    .fontSize(16)
+    .fontSize(18)
     .fillColor("#000")
     .text("Reservation Confirmation", { align: "center" })
-    .moveDown(0.5);
+    .moveDown(0.3);
+
   doc
     .fontSize(11)
     .fillColor("#444")
-    .text("This document confirms your reservation details.", { align: "center" })
-    .moveDown(1);
+    .text("This document confirms your reservation at JA'AN Restaurant.", { align: "center" });
 
+  doc.moveDown(1);
   doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke("#ccc").moveDown(1.5);
 
-  // === Reservation Information ===
-  const labelStyle = { continued: true, width: 200 };
-  const valueStyle = { align: "left" };
-
+  // === Reservation Details ===
   const detail = (label, value) => {
     doc
       .font("Helvetica-Bold")
       .fontSize(12)
       .fillColor("#333")
-      .text(`${label}: `, labelStyle)
+      .text(`${label}: `, { continued: true })
       .font("Helvetica")
       .fillColor("#000")
-      .text(value, valueStyle)
+      .text(value)
       .moveDown(0.5);
   };
 
-  detail("Reservation ID", reservation.id);
+  detail("Reservation Code", reservationCode);
   detail("Name", reservation.name);
   detail("Phone Number", reservation.phoneNumber);
   detail("Date", reservation.date);
   detail("Time", reservation.time);
   detail("Number of Pax", reservation.pax);
-  detail("Table / Sofa", reservation.tableType);
+  detail("Floor", reservation.floor);
+  detail("Table Type", reservation.tableType);
+  detail("Status", reservation.status.toUpperCase());
 
   doc.moveDown(1);
+  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke("#eee").moveDown(1);
 
-  // === Notes Section ===
+  // === Notes ===
   doc
-    .moveTo(50, doc.y)
-    .lineTo(550, doc.y)
-    .stroke("#eee")
+    .font("Helvetica-Bold")
+    .fontSize(12)
+    .fillColor("#000")
+    .text("Important Notes:")
+    .moveDown(0.5);
+
+  doc
+    .font("Helvetica")
+    .fontSize(11)
+    .fillColor("#444")
+    .list([
+      "Please arrive at least 10 minutes before your scheduled time.",
+      "Minimum spend may apply for VIP or sofa table types.",
+      "Contact us at least 2 hours in advance for any changes or cancellations.",
+    ], { bulletRadius: 2, lineGap: 4 })
     .moveDown(1);
 
+  // === Footer ===
   doc
+    .font("Helvetica-Bold")
+    .fontSize(12)
+    .fillColor("#222")
+    .text("Thank you for choosing JA'AN.", { align: "center" });
+
+  doc
+    .font("Helvetica")
     .fontSize(11)
     .fillColor("#555")
-    .text(
-      "• Please arrive at least 10 minutes before your scheduled time.\n" +
-        "• Minimum spend may apply for sofa and special table types.\n" +
-        "• For changes or cancellations, contact us at least 2 hours before your reservation.",
-      { lineGap: 4 }
-    )
-    .moveDown(1);
-
-  doc
-    .fontSize(11)
-    .fillColor("#222")
-    .text(
-      "Thank you for choosing JA'AN. We look forward to welcoming you!",
-      { align: "center" }
-    );
+    .text("We look forward to welcoming you!", { align: "center" });
 
   doc.end();
 
