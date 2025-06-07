@@ -10,7 +10,7 @@ export function useSocket(event, callback) {
     });
 
     socket.on(event, (data) => {
-      console.log(`Received event ${event}:`, data);
+      console.log(`Received event ${event}`);
       callback(data);
     });
 

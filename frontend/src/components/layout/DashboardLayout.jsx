@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }) {
   };
 
   useSocket("new-reservation", (data) => {
-    console.log("New reservation received in frontend:", data);
+    console.log("New reservation received in frontend:");
 
     playSound(); // 🔊 Play the sound
     triggerRefresh(); // Trigger refresh of reservation data

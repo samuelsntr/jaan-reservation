@@ -22,7 +22,7 @@ function initSocket(server) {
 function emitNewReservation(reservation) {
   if (io) {
     const data = reservation.dataValues ? reservation.dataValues : reservation;
-    console.log("Emitting new-reservation event:", data);
+    console.log("Emitting new-reservation event");
     io.emit("new-reservation", data);
   } else {
     console.log("Socket.io instance not initialized");
