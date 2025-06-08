@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   BarChart,
   Bar,
@@ -17,14 +17,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import {
-  CalendarDays,
-  Users,
-  UserCheck,
-  Clock3,
-  LayoutGrid,
-  Building2,
-} from "lucide-react";
+import { CalendarDays, Users, UserCheck, Clock3 } from "lucide-react";
 import api from "@/lib/axios";
 import clsx from "clsx";
 
@@ -155,15 +148,17 @@ function KPI({ title, value, icon, color }) {
   return (
     <Card
       className={clsx(
-        "flex items-center justify-between p-4 shadow hover:shadow-lg transition-shadow border border-muted rounded-2xl",
+        "flex items-center justify-between p-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-muted rounded-2xl",
         "bg-white dark:bg-muted"
       )}
     >
-      <div>
+      <div className="flex flex-col">
         <p className="text-sm text-muted-foreground">{title}</p>
-        <h3 className="text-2xl font-bold">{value ?? 0}</h3>
+        <h3 className="text-3xl font-bold text-primary">{value ?? 0}</h3>
       </div>
-      <div className={clsx("p-2 rounded-full", color)}>{icon}</div>
+      <div className={clsx("p-3 rounded-full", color, "text-white")}>
+        {icon}
+      </div>
     </Card>
   );
 }
