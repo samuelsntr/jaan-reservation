@@ -9,7 +9,7 @@ import { ReservationRefreshProvider } from "./contexts/ReservationRefreshContext
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-      <Toaster />
+      <Toaster theme="light" richColors />
       <ReservationRefreshProvider>
         <App />
       </ReservationRefreshProvider>
