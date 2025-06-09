@@ -15,7 +15,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('admin', 'staff'),
       allowNull: false,
     },
-  });
+  },
+  {
+    tableName: "users",
+    freezeTableName: true,
+  }
+);
 
   // Optionally, define associations (if needed in the future)
   // Example: User.associate = function(models) {

@@ -32,7 +32,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("pending", "confirmed", "rejected"),
         defaultValue: "pending",
       },
-    });
+    },
+  {
+    tableName: "reservations",
+    freezeTableName: true,
+  });
   
     return Reservation;
   };
