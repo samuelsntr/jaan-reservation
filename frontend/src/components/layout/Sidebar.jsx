@@ -8,18 +8,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"; // Assuming these are well-designed UI components
+} from "@/components/ui/sidebar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ModeToggle } from "../mode-toggle";
 
 // Define navigation items
 const primaryNavigation = [
-  {
-    title: "Dashboard",
-    icon: Home,
-    url: "/dashboard",
-  },
   {
     title: "Reservations",
     icon: Calendar,
@@ -28,6 +23,11 @@ const primaryNavigation = [
 ];
 
 const adminNavigation = [
+  {
+    title: "Dashboard",
+    icon: Home,
+    url: "/dashboard",
+  },
   {
     title: "User Management",
     icon: Users,
@@ -69,8 +69,7 @@ export function AppSidebar() {
                          }`
                       }
                     >
-                      <item.icon className="h-5 w-5" />{" "}
-                      {/* Slightly larger icons */}
+                      <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -114,8 +113,6 @@ export function AppSidebar() {
 
       {/* Logout Button */}
       <div className="p-4 border-t border-border mt-auto">
-        {" "}
-        {/* Added border-border for theme compatibility */}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton

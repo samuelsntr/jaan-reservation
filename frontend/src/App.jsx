@@ -21,7 +21,15 @@ function App() {
         {/* Public */}
         <Route
           path="/"
-          element={user ? <Navigate to="/dashboard" /> : <Login />}
+          element={
+            user ? (
+              <Navigate
+                to={user.role === "admin" ? "/dashboard" : "/reservation-table"}
+              />
+            ) : (
+              <Login />
+            )
+          }
         />
         <Route path="/reservations" element={<ReservationPage />} />
 
