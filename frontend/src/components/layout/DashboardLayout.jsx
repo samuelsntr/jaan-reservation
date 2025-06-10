@@ -5,7 +5,7 @@ import { useReservationRefresh } from "@/contexts/ReservationRefreshContext";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { formatDate } from "../../lib/formatDate";
-import { ThemeProvider } from "../theme-provider";
+import { ThemeProvider } from "../../contexts/theme-provider";
 
 export default function DashboardLayout({ children }) {
   const { triggerRefresh } = useReservationRefresh();
