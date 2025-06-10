@@ -9,9 +9,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"; // Assuming these are well-designed UI components
-
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { ModeToggle } from "../mode-toggle";
 
 // Define navigation items
 const primaryNavigation = [
@@ -48,6 +48,9 @@ export function AppSidebar() {
     <Sidebar className="h-screen flex flex-col">
       <SidebarContent className="flex-grow">
         {/* Application Navigation */}
+        <div className="ml-4 mt-3">
+          <ModeToggle />
+        </div>
         <SidebarGroup>
           <SidebarGroupLabel>General</SidebarGroupLabel>
           <SidebarGroupContent>

@@ -5,6 +5,7 @@ import { useReservationRefresh } from "@/contexts/ReservationRefreshContext";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { formatDate } from "../../lib/formatDate";
+import { ThemeProvider } from "../theme-provider";
 
 export default function DashboardLayout({ children }) {
   const { triggerRefresh } = useReservationRefresh();
@@ -48,10 +49,12 @@ export default function DashboardLayout({ children }) {
   });
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarTrigger />
-      <main className="flex-1 h-full overflow-y-auto p-6">{children}</main>
-    </SidebarProvider>
+    <ThemeProvider>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarTrigger />
+        <main className="flex-1 h-full overflow-y-auto p-6">{children}</main>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }
