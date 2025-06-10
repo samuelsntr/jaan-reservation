@@ -1,0 +1,15 @@
+Phone number:
+
+Menggunakan sleekflow
+
+time: (time max) 10.45
+
+minimum spend: weeekday() and weekend()
+
+number pax: 1-10
+
+table: 1-4
+
+add special request
+
+no show, jika tidak datang 10.45 akan di sediakan table yg availabe
