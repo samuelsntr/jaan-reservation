@@ -144,6 +144,7 @@ export default function ReservationForm() {
               name="time"
               value={form.time}
               onChange={handleChange}
+              max="10:45"
               className="h-11"
             />
           </div>
@@ -235,19 +236,23 @@ export default function ReservationForm() {
         <ul className="space-y-2">
           <li className="flex items-center text-gray-600">
             <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Table 4 pax: No minimum spend
+            Table 4 pax: No min spend
           </li>
           <li className="flex items-center text-gray-600">
             <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Table 6 pax: No minimum spend
+            Table 6 pax: No min spend
           </li>
           <li className="flex items-center text-gray-600">
             <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Sofa 6–10 pax: Min open 1 bottle / Min order 1500k
+            Sofa 6-10 pax: Weekend Min open 1 bottle / Min Order 2000k
           </li>
           <li className="flex items-center text-gray-600">
             <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Bar: No minimum spend
+            Sofa 6-10 pax: Weekdays Min open 1 bottle / Min Order 1500k
+          </li>
+          <li className="flex items-center text-gray-600">
+            <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+            Bar: No min spend
           </li>
         </ul>
       </div>
