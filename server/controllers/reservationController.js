@@ -4,6 +4,7 @@ const path = require("path");
 require('dotenv').config();
 const { Op } = require("sequelize");
 const { emitNewReservation } = require("../utils/socket");
+const { generateReservationPdfFilename  } = require("../utils/generateFilename");
 
 exports.createReservation = async (req, res) => {
   try {
@@ -56,7 +57,8 @@ exports.getReservations = async (req, res) => {
     const withPdfUrl = data.map((reservation) => {
       const resJson = reservation.toJSON();
       if (resJson.status === "confirmed") {
-        resJson.pdfUrl = `${process.env.BASE_URL}/pdfs/reservation-${resJson.id}.pdf`;
+        const filename = generateReservationPdfFilename(resJson);
+        resJson.pdfUrl = `${process.env.BASE_URL}/pdfs/${filename}`;
       }
       return resJson;
     });

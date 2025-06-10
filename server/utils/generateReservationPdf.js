@@ -1,14 +1,17 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
+const { generateReservationPdfFilename } = require("./generateFilename");
 
 const generateReservationPdf = (reservation) => {
-  const doc = new PDFDocument({ margin: 50 });
-
-  const formattedDate = reservation.date.replace(/-/g, ""); // e.g., 20250606
-  const tableCode = reservation.tableType.toUpperCase().replace(/\s+/g, "");
-  const reservationCode = `${formattedDate}-PAX${reservation.pax}-${tableCode}`;
-  const filename = `reservation-${reservation.name}-${reservationCode}.pdf`;
+  // Set A4 size (595.28 x 841.89 points)
+  const doc = new PDFDocument({ 
+    size: 'A4',
+    margin: 50,
+    layout: 'portrait'
+  });
+  
+  const filename = generateReservationPdfFilename(reservation);
   const filePath = path.join(__dirname, "..", "pdfs", filename);
 
   if (!fs.existsSync(path.dirname(filePath))) {
@@ -40,16 +43,16 @@ const generateReservationPdf = (reservation) => {
   doc
     .fontSize(18)
     .fillColor("#000")
-    .text("Reservation Confirmation", { align: "center" })
+    .text("Reservation Confirmation", { align: "center", width: 355 })
     .moveDown(0.3);
 
   doc
     .fontSize(11)
     .fillColor("#444")
-    .text("This document confirms your reservation at JA'AN Restaurant.", { align: "center" });
+    .text("This document confirms your reservation at JA'AN Restaurant.", { align: "center", width: 355 });
 
   doc.moveDown(1);
-  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke("#ccc").moveDown(1.5);
+  doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke("#ccc").moveDown(1.5);
 
   // === Reservation Details ===
   const detail = (label, value) => {
@@ -64,6 +67,9 @@ const generateReservationPdf = (reservation) => {
       .moveDown(0.5);
   };
 
+  // Generate reservation code from filename
+  const reservationCode = `${reservation.date.replace(/-/g, "")}-${reservation.tableType.toUpperCase().replace(/\s+/g, "")}-${reservation.id}`
+  
   detail("Reservation Code", reservationCode);
   detail("Name", reservation.name);
   detail("Phone Number", reservation.phoneNumber);
@@ -75,7 +81,7 @@ const generateReservationPdf = (reservation) => {
   detail("Status", reservation.status.toUpperCase());
 
   doc.moveDown(1);
-  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke("#eee").moveDown(1);
+  doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke("#eee").moveDown(1);
 
   // === Notes ===
   doc
@@ -85,7 +91,7 @@ const generateReservationPdf = (reservation) => {
     .text("Important Notes:")
     .moveDown(0.5);
 
-  doc
+    doc
     .font("Helvetica")
     .fontSize(11)
     .fillColor("#444")
@@ -93,21 +99,24 @@ const generateReservationPdf = (reservation) => {
       "Please arrive at least 10 minutes before your scheduled time.",
       "Minimum spend may apply for VIP or sofa table types.",
       "Contact us at least 2 hours in advance for any changes or cancellations.",
+      "We will hold your reservation until 10:45 PM. If you haven't arrived by then, the table will be automatically released.",
+      "If you're already at Jaan Bali after 10:45 PM, we will try our best to find an available table or sofa for you.",
     ], { bulletRadius: 2, lineGap: 4 })
     .moveDown(1);
-
+  
   // === Footer ===
+  doc.moveDown(2);
   doc
     .font("Helvetica-Bold")
     .fontSize(12)
     .fillColor("#222")
-    .text("Thank you for choosing JA'AN.", { align: "center" });
+    .text("Thank you for choosing JA'AN.", { align: "center", width: 355 });
 
   doc
     .font("Helvetica")
     .fontSize(11)
     .fillColor("#555")
-    .text("We look forward to welcoming you!", { align: "center" });
+    .text("We look forward to welcoming you!", { align: "center", width: 355 });
 
   doc.end();
 
