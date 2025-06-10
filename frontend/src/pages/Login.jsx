@@ -46,9 +46,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center p-4">
-      <div className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center p-4 dark:bg-gray-900">
+      <div className="w-full max-w-md bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-center mb-6 dark:text-white">
           Jaan Reservation
         </h1>
 
@@ -62,23 +62,25 @@ export default function Login() {
 
         <form className="space-y-5" onSubmit={handleLogin}>
           <div className="space-y-2">
-            <Label>Username</Label>
+            <Label className="dark:text-gray-200">Username</Label>
             <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Masukkan username"
               disabled={loading}
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Password</Label>
+            <Label className="dark:text-gray-200">Password</Label>
             <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Masukkan password"
               disabled={loading}
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
             />
           </div>
 

@@ -105,9 +105,7 @@ export default function AdminReservationTable() {
     <div className="max-w-full">
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Reservation Management
-          </h2>
+          <h2 className="text-2xl font-bold">Reservation Management</h2>
           <Badge variant="outline" className="text-sm">
             {reservations.length} Total Reservations
           </Badge>

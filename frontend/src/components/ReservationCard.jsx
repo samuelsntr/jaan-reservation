@@ -16,7 +16,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { formatDate } from "@/lib/formatDate"; // or wherever your date util is
+import { formatDate } from "@/lib/formatDate";
 
 export default function ReservationCard({
   reservation,
@@ -30,28 +30,28 @@ export default function ReservationCard({
     switch (status) {
       case "confirmed":
         return (
-          <Badge className="bg-green-100 text-green-800 ml-2">
+          <Badge variant="outline" className="text-green-500 ml-2">
             <CheckCircle className="w-4 h-4" />
             CONFIRMED
           </Badge>
         );
       case "rejected":
         return (
-          <Badge variant="destructive" className="bg-red-100 text-red-800 ml-2">
+          <Badge variant="outline" className="text-red-500 ml-2">
             <XCircle className="w-4 h-4" />
             REJECTED
           </Badge>
         );
       case "pending":
         return (
-          <Badge className="bg-yellow-100 text-yellow-800 ml-2">
+          <Badge variant="outline" className="text-yellow-500 ml-2">
             <Clock className="w-4 h-4" />
             PENDING
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-gray-100 text-gray-800 ml-2">
+          <Badge variant="outline" className="text-gray-500 ml-2">
             <HelpCircle className="w-4 h-4" />
             Unknown
           </Badge>
@@ -62,16 +62,18 @@ export default function ReservationCard({
   return (
     <Card
       key={res.id}
-      className="p-4 hover:shadow-md transition-shadow duration-200"
+      className="p-4 hover:shadow-md transition-shadow duration-200 bg-card text-card-foreground"
     >
       <div className="flex flex-col gap-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-gray-900">{res.name}</h3>
+            <h3 className="text-lg font-semibold text-foreground">
+              {res.name}
+            </h3>
             {getStatusBadge(res.status)}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               <span>{res.pax} pax</span>
@@ -94,7 +96,7 @@ export default function ReservationCard({
             </div>
           </div>
 
-          <p className="text-sm font-medium text-gray-700">{res.tableType}</p>
+          <p className="text-sm font-medium text-foreground">{res.tableType}</p>
         </div>
 
         <div className="flex items-center justify-end gap-2">
