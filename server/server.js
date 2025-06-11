@@ -11,6 +11,10 @@ const app = express();
 const path = require("path");
 const httpServer = require("http").createServer(app);
 const { initSocket } = require("./utils/socket");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const sessionStore = new SequelizeStore({
+  db: db.sequelize,
+});
 
 initSocket(httpServer);
 
@@ -19,7 +23,8 @@ app.use(
   session({
     secret: "your-secret-key", // Ganti dengan string acak yang kuat
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    store: sessionStore, // <-- use this
     cookie: {
       secure: false, // Set true if using HTTPS
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
