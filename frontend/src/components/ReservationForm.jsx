@@ -144,7 +144,7 @@ export default function ReservationForm() {
               name="time"
               value={form.time}
               onChange={handleChange}
-              max="10:45"
+              // max="22:45"
               className="h-11"
             />
           </div>
