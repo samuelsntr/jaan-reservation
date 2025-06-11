@@ -20,7 +20,10 @@ app.use(
     secret: "your-secret-key", // Ganti dengan string acak yang kuat
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Jika menggunakan HTTPS, set secure: true
+    cookie: {
+      secure: false, // Set true if using HTTPS
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    }
   })
 );
 
