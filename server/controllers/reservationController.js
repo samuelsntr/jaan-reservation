@@ -5,6 +5,7 @@ require('dotenv').config();
 const { Op } = require("sequelize");
 const { emitNewReservation } = require("../utils/socket");
 const { generateReservationPdfFilename  } = require("../utils/generateFilename");
+const { sendWhatsAppMessage, formatReservationMessage, formatRejectionMessage } = require("../utils/sleekflow");
 
 exports.createReservation = async (req, res) => {
   try {
@@ -78,28 +79,40 @@ exports.confirmReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // 1. Find reservation
+    // Find and update reservation
     const reservation = await Reservation.findByPk(id);
-    if (!reservation)
+    if (!reservation) {
       return res.status(404).json({ message: "Reservation not found" });
+    }
 
-    // 2. Update status to confirmed
     reservation.status = "confirmed";
     await reservation.save();
 
-    // 3. Generate PDF
+    // Generate PDF confirmation letter
     const pdfPath = await generateReservationPdf(reservation);
     const pdfFileName = path.basename(pdfPath);
-
-    // 5. Construct URL to serve PDF (optional for frontend download)
     const pdfUrl = `${req.protocol}://${req.get("host")}/pdfs/${pdfFileName}`;
 
-    // 6. Respond with success
-    res.json({
-      message: "Reservation confirmed and WhatsApp sent",
-      pdfUrl,
-    });
+    // Send WhatsApp notification
+    let whatsappResult = { success: false };
+    
+    if (reservation.phoneNumber) {
+      const message = formatReservationMessage(reservation, pdfUrl);
+      whatsappResult = await sendWhatsAppMessage({
+        phoneNumber: reservation.phoneNumber,
+        message: message,
+      });
+    } else {
+      console.warn("⚠️ No phone number, skipping WhatsApp");
+    }
 
+    // Respond with confirmation
+    res.json({
+      message: "Reservation confirmed",
+      pdfUrl,
+      whatsappSent: whatsappResult.success,
+      whatsappError: whatsappResult.success ? null : whatsappResult.error,
+    });
   } catch (err) {
     console.error("Error confirming reservation:", err);
     res.status(500).json({ message: err.message || "Internal server error" });
@@ -109,9 +122,77 @@ exports.confirmReservation = async (req, res) => {
 exports.rejectReservation = async (req, res) => {
   try {
     const { id } = req.params;
-    await Reservation.update({ status: "rejected" }, { where: { id } });
-    res.json({ message: "Reservation rejected" });
+    const { reason, reasonTitle } = req.body;
+
+    // Find and update reservation
+    const reservation = await Reservation.findByPk(id);
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    reservation.status = "rejected";
+    await reservation.save();
+
+    // Send rejection WhatsApp message
+    let whatsappResult = { success: false };
+    
+    if (reservation.phoneNumber && reason) {
+      const message = formatRejectionMessage(reservation, reason);
+      whatsappResult = await sendWhatsAppMessage({
+        phoneNumber: reservation.phoneNumber,
+        message: message,
+      });
+    }
+
+    res.json({
+      message: "Reservation rejected",
+      whatsappSent: whatsappResult.success,
+      whatsappError: whatsappResult.success ? null : whatsappResult.error,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.resendConfirmation = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find reservation
+    const reservation = await Reservation.findByPk(id);
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    if (reservation.status !== "confirmed") {
+      return res.status(400).json({ message: "Only confirmed reservations can be resent" });
+    }
+
+    // Get PDF URL
+    const { generateReservationPdfFilename } = require("../utils/generateFilename");
+    const pdfFileName = generateReservationPdfFilename(reservation.toJSON());
+    const pdfUrl = `${req.protocol}://${req.get("host")}/pdfs/${pdfFileName}`;
+
+    // Resend WhatsApp message
+    const message = formatReservationMessage(reservation, pdfUrl);
+    const whatsappResult = await sendWhatsAppMessage({
+      phoneNumber: reservation.phoneNumber,
+      message: message,
+    });
+
+    if (whatsappResult.success) {
+      res.json({
+        message: "Confirmation resent successfully",
+        whatsappSent: true,
+      });
+    } else {
+      res.status(500).json({
+        message: "Failed to resend confirmation",
+        error: whatsappResult.error,
+      });
+    }
+  } catch (err) {
+    console.error("Error resending confirmation:", err);
+    res.status(500).json({ message: err.message || "Internal server error" });
   }
 };
