@@ -9,6 +9,7 @@ import { CalendarX } from "lucide-react";
 import DatePopover from "./DatePopover";
 import { Button } from "@/components/ui/button";
 import { useReservationRefresh } from "@/contexts/ReservationRefreshContext";
+import RejectReservationDialog from "./RejectReservationDialog";
 
 export default function AdminReservationTable() {
   const { refreshCount } = useReservationRefresh();
@@ -21,6 +22,10 @@ export default function AdminReservationTable() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+  const [isRejecting, setIsRejecting] = useState(false);
+  const [isResending, setIsResending] = useState(null);
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -54,7 +59,18 @@ export default function AdminReservationTable() {
       if (status === "confirmed") {
         setConfirmingId(id);
         const res = await api.put(`/reservations/confirm/${id}`);
-        toast.success(`Reservation confirmed. PDF generated.`);
+
+        // Show different messages based on WhatsApp sending status
+        if (res.data.whatsappSent) {
+          toast.success(`✅ Reservation confirmed! WhatsApp sent with PDF.`);
+        } else if (res.data.whatsappError) {
+          toast.warning(
+            `⚠️ Reservation confirmed & PDF generated, but WhatsApp failed to send. You can resend it.`
+          );
+          console.error("WhatsApp error:", res.data.whatsappError);
+        } else {
+          toast.success(`Reservation confirmed. PDF generated.`);
+        }
 
         const updated = reservations.map((r) =>
           r.id === id
@@ -63,12 +79,10 @@ export default function AdminReservationTable() {
         );
         setReservations(updated);
       } else if (status === "rejected") {
-        await api.put(`/reservations/reject/${id}`);
-        toast.success(`Reservation rejected.`);
-        const updated = reservations.map((r) =>
-          r.id === id ? { ...r, status: "rejected" } : r
-        );
-        setReservations(updated);
+        // Open rejection dialog instead of immediate reject
+        const reservation = reservations.find((r) => r.id === id);
+        setSelectedReservation(reservation);
+        setRejectDialogOpen(true);
       }
     } catch (err) {
       console.log(err.message);
@@ -78,19 +92,53 @@ export default function AdminReservationTable() {
     }
   };
 
-  const sendWhatsAppMessage = (res) => {
-    if (!res.phoneNumber || !res.pdfUrl) {
-      toast.error("Phone number or PDF link missing.");
-      return;
+  const handleReject = async (rejectionData) => {
+    try {
+      setIsRejecting(true);
+      const res = await api.put(
+        `/reservations/reject/${selectedReservation.id}`,
+        {
+          reason: rejectionData.message,
+          reasonTitle: rejectionData.reasonTitle,
+        }
+      );
+
+      if (res.data.whatsappSent) {
+        toast.success(`✅ Reservation rejected. WhatsApp notification sent.`);
+      } else {
+        toast.success(`Reservation rejected. WhatsApp notification failed.`);
+      }
+
+      const updated = reservations.map((r) =>
+        r.id === selectedReservation.id ? { ...r, status: "rejected" } : r
+      );
+      setReservations(updated);
+      setRejectDialogOpen(false);
+      setSelectedReservation(null);
+    } catch (err) {
+      console.error(err.message);
+      toast.error("Failed to reject reservation.");
+    } finally {
+      setIsRejecting(false);
     }
+  };
 
-    const phone = res.phoneNumber.replace(/^0/, "62"); // convert 08xx to 628xx
-    const message = encodeURIComponent(
-      `Hi ${res.name}, your reservation is confirmed!\nHere is your confirmation PDF:\n${res.pdfUrl}`
-    );
+  const handleResendConfirmation = async (reservation) => {
+    try {
+      setIsResending(reservation.id);
+      const res = await api.post(`/reservations/resend/${reservation.id}`);
 
-    const link = `https://wa.me/${phone}?text=${message}`;
-    window.open(link, "_blank");
+      if (res.data.whatsappSent) {
+        toast.success(`✅ Confirmation resent to ${reservation.name}!`);
+      } else {
+        toast.error("Failed to resend confirmation.");
+      }
+    } catch (err) {
+      console.error(err.message);
+      toast.error("Failed to resend confirmation.");
+    } finally {
+      setIsResending(null);
+    }
   };
 
   if (loading) {
@@ -177,10 +225,21 @@ export default function AdminReservationTable() {
                 reservation={res}
                 confirmingId={confirmingId}
                 updateStatus={updateStatus}
-                sendWhatsAppMessage={sendWhatsAppMessage}
+                handleResendConfirmation={handleResendConfirmation}
+                isResending={isResending}
               />
             ))}
           </div>
+          <RejectReservationDialog
+            isOpen={rejectDialogOpen}
+            onClose={() => {
+              setRejectDialogOpen(false);
+              setSelectedReservation(null);
+            }}
+            onConfirm={handleReject}
+            reservation={selectedReservation}
+            isRejecting={isRejecting}
+          />
           <PaginationControls
             page={page}
             totalPages={totalPages}

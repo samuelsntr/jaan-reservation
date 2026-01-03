@@ -22,7 +22,8 @@ export default function ReservationCard({
   reservation,
   confirmingId,
   updateStatus,
-  sendWhatsAppMessage,
+  handleResendConfirmation,
+  isResending,
 }) {
   const res = reservation;
 
@@ -153,10 +154,19 @@ export default function ReservationCard({
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => sendWhatsAppMessage(res)}
+                onClick={() => handleResendConfirmation(res)}
+                disabled={isResending === res.id}
                 className="w-full sm:w-auto"
               >
-                <Phone size={16} className="mr-2" /> Send via WhatsApp
+                {isResending === res.id ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" /> Sending...
+                  </>
+                ) : (
+                  <>
+                    <Phone size={16} className="mr-2" /> Resend Confirmation
+                  </>
+                )}
               </Button>
             </div>
           )}
