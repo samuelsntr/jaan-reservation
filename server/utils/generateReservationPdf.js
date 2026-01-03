@@ -21,35 +21,28 @@ const generateReservationPdf = (reservation) => {
   const stream = fs.createWriteStream(filePath);
   doc.pipe(stream);
 
-  // === Branding & Header ===
+  // === Logo Centered at Top ===
   const logoPath = path.join(__dirname, "..", "assets", "jaan-logo.png");
   if (fs.existsSync(logoPath)) {
-    doc.image(logoPath, 50, 45, { width: 60 });
+    const logoSize = 80;
+    const pageWidth = doc.page.width;
+    const logoX = (pageWidth - logoSize) / 2;
+    doc.image(logoPath, logoX, 40, { width: logoSize });
   }
 
-  doc
-    .fontSize(20)
-    .fillColor("#222")
-    .text("JA'AN Restaurant", 120, 50)
-    .fontSize(10)
-    .fillColor("#666")
-    .text("Jl. Raya Seminyak No.10, Seminyak, Kec. Kuta, Kabupaten Badung, Bali 80361", 120, 75)
-    .text("Phone: +62 819-1900-1818", 120, 90)
-    .text("Instagram: @jaanbali", 120, 105);
-
-  doc.moveDown(2);
+  doc.moveDown(5);
 
   // === Title ===
   doc
     .fontSize(18)
     .fillColor("#000")
-    .text("Reservation Confirmation", { align: "center", width: 355 })
+    .text("Reservation Confirmation", { align: "center" })
     .moveDown(0.3);
 
   doc
     .fontSize(11)
     .fillColor("#444")
-    .text("This document confirms your reservation at JA'AN Restaurant.", { align: "center", width: 355 });
+    .text("This document confirms your reservation at JA'AN Bali.", { align: "center" });
 
   doc.moveDown(1);
   doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke("#ccc").moveDown(1.5);
@@ -104,19 +97,40 @@ const generateReservationPdf = (reservation) => {
     ], { bulletRadius: 2, lineGap: 4 })
     .moveDown(1);
   
-  // === Footer ===
+  // === Thank You Message ===
   doc.moveDown(2);
   doc
     .font("Helvetica-Bold")
     .fontSize(12)
     .fillColor("#222")
-    .text("Thank you for choosing JA'AN.", { align: "center", width: 355 });
+    .text("Thank you for choosing JA'AN.", { align: "center" });
 
   doc
     .font("Helvetica")
     .fontSize(11)
     .fillColor("#555")
-    .text("We look forward to welcoming you!", { align: "center", width: 355 });
+    .text("We look forward to welcoming you!", { align: "center" })
+    .moveDown(3);
+
+  // === Footer - Contact Information ===
+  doc.moveDown(2);
+  doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke("#ccc").moveDown(1);
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(11)
+    .fillColor("#222")
+    .text("JA'AN Bali", { align: "center" })
+    .moveDown(0.3);
+
+  doc
+    .font("Helvetica")
+    .fontSize(9)
+    .fillColor("#666")
+    .text("Jl. Raya Seminyak No.10, Seminyak, Kec. Kuta", { align: "center" })
+    .text("Kabupaten Badung, Bali 80361", { align: "center" })
+    .moveDown(0.3)
+    .text("Phone: +62 819-1900-1818  |  Instagram: @jaanbali", { align: "center" });
 
   doc.end();
 
