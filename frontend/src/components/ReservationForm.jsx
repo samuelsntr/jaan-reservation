@@ -90,9 +90,18 @@ export default function ReservationForm() {
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-lg space-y-8 mt-10">
-      <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold">JA'AN Reservation</h2>
-        <p className="text-gray-500">Book your table at JA'AN Restaurant</p>
+      <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <img
+            src="/jaan-logo.png"
+            alt="JA'AN Restaurant Logo"
+            className="h-20 w-auto object-contain"
+          />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-3xl font-bold">JA'AN Reservation</h2>
+          <p className="text-gray-500">Book your table at JA'AN Restaurant</p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
