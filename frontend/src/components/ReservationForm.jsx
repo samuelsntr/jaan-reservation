@@ -231,30 +231,93 @@ export default function ReservationForm() {
         </Button>
       </form>
 
-      <div className="bg-gray-50 rounded-lg p-6 space-y-3">
+      {/* Minimum Spend Note Section With Responsive Columns */}
+      <div className="bg-gray-50 rounded-lg p-6 space-y-5">
         <h3 className="font-semibold text-gray-900">Note minimum spend</h3>
-        <ul className="space-y-2">
-          <li className="flex items-center text-gray-600">
-            <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Table 4 pax: No min spend
-          </li>
-          <li className="flex items-center text-gray-600">
-            <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Table 6 pax: No min spend
-          </li>
-          <li className="flex items-center text-gray-600">
-            <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Sofa 6-10 pax: Weekend Min open 1 bottle / Min Order 2000k
-          </li>
-          <li className="flex items-center text-gray-600">
-            <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Sofa 6-10 pax: Weekdays Min open 1 bottle / Min Order 1500k
-          </li>
-          <li className="flex items-center text-gray-600">
-            <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-            Bar: No min spend
-          </li>
-        </ul>
+        <div className="flex flex-col md:flex-row md:space-x-8 md:space-y-0 space-y-5">
+          {/* Sunday until Thursday */}
+          <div className="flex-1">
+            <div className="font-medium text-sm text-gray-700 mb-1">
+              <span className="italic">Sunday until Thursday</span>
+            </div>
+            <ul className="space-y-2 ml-4">
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Sofa 10 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : No min spend
+                </span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Sofa 6 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : No min spend
+                </span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Sofa 4 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : No min spend
+                </span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Table 6 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : No min spend
+                </span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Table 4 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : No min spend
+                </span>
+              </li>
+            </ul>
+          </div>
+          {/* Friday & Saturday */}
+          <div className="flex-1">
+            <div className="font-medium text-sm text-gray-700 mt-4 md:mt-0 mb-1">
+              <span className="italic">Friday &amp; Saturday</span>
+            </div>
+            <ul className="space-y-2 ml-4">
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Sofa 10 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : 2500k
+                </span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Sofa 6 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : 1500k
+                </span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Sofa 4 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">
+                  : 1000k
+                </span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Table 6 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">: 750k</span>
+              </li>
+              <li className="flex items-center text-gray-600">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                Table 4 pax{" "}
+                <span className="ml-2 font-semibold text-gray-600">: 500k</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
