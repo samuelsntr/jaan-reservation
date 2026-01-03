@@ -14,6 +14,9 @@ import {
   CheckCircle,
   XCircle,
   HelpCircle,
+  UserCheck,
+  UserX,
+  Table,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/formatDate";
@@ -24,6 +27,8 @@ export default function ReservationCard({
   updateStatus,
   handleResendConfirmation,
   isResending,
+  handleShowUpStatus,
+  isUpdatingShowUp,
 }) {
   const res = reservation;
 
@@ -95,12 +100,17 @@ export default function ReservationCard({
               <Building2 className="w-4 h-4" />
               <span>{res.floor}</span>
             </div>
+            <div className="flex items-center gap-2">
+              <Table className="w-4 h-4" />
+              <span>{res.tableType}</span>
+            </div>
           </div>
 
-          <p className="text-sm font-medium text-foreground">{res.tableType}</p>
+          {/* <p className="text-sm font-medium text-foreground">{res.tableType}</p> */}
         </div>
 
-        <div className="flex items-center justify-end gap-2">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-2 flex-wrap">
           {res.status === "pending" && (
             <>
               <Button
@@ -131,9 +141,12 @@ export default function ReservationCard({
               </Button>
             </>
           )}
+        </div>
 
-          {res.status === "confirmed" && (
-            <div className="flex gap-2 w-full flex-col sm:flex-row justify-end">
+        {/* Confirmed Reservation Actions */}
+        {res.status === "confirmed" && (
+          <div className="pt-3 border-t">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -146,7 +159,7 @@ export default function ReservationCard({
                     });
                   }
                 }}
-                className="w-full sm:w-auto"
+                className="w-full sm:flex-1"
               >
                 <FileText size={16} className="mr-2" /> View PDF
               </Button>
@@ -156,21 +169,55 @@ export default function ReservationCard({
                 size="sm"
                 onClick={() => handleResendConfirmation(res)}
                 disabled={isResending === res.id}
-                className="w-full sm:w-auto"
+                className="w-full sm:flex-1"
               >
                 {isResending === res.id ? (
                   <>
-                    <Loader2 size={16} className="mr-2 animate-spin" /> Sending...
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    Sending...
                   </>
                 ) : (
                   <>
-                    <Phone size={16} className="mr-2" /> Resend Confirmation
+                    <Phone size={16} className="mr-2" /> Resend
+                  </>
+                )}
+              </Button>
+
+              <Button
+                variant={
+                  res.showedUp === true
+                    ? "default"
+                    : res.showedUp === false
+                    ? "destructive"
+                    : "outline"
+                }
+                size="sm"
+                onClick={() =>
+                  handleShowUpStatus(res, res.showedUp === true ? false : true)
+                }
+                disabled={isUpdatingShowUp === res.id}
+                className="w-full sm:flex-1"
+              >
+                {isUpdatingShowUp === res.id ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : res.showedUp === true ? (
+                  <>
+                    <UserCheck size={16} className="mr-2" />
+                    Showed Up
+                  </>
+                ) : (
+                  <>
+                    <UserX size={16} className="mr-2" />
+                    No-Show
                   </>
                 )}
               </Button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </Card>
   );

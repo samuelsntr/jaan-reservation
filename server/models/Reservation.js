@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("pending", "confirmed", "rejected"),
         defaultValue: "pending",
       },
+      showedUp: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
   {
     tableName: "reservations",

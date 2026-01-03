@@ -196,3 +196,57 @@ exports.resendConfirmation = async (req, res) => {
     res.status(500).json({ message: err.message || "Internal server error" });
   }
 };
+
+exports.updateShowUpStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { showedUp } = req.body;
+
+    // Find reservation
+    const reservation = await Reservation.findByPk(id);
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    if (reservation.status !== "confirmed") {
+      return res.status(400).json({ message: "Only confirmed reservations can be marked" });
+    }
+
+    // Update showedUp status
+    reservation.showedUp = showedUp;
+    await reservation.save();
+
+    // Optionally send WhatsApp message for no-shows
+    if (showedUp === false && reservation.phoneNumber) {
+      const noShowMessage = `Hi ${reservation.name},
+
+We noticed you didn't make it to your reservation at *JA'AN Bali* today.
+
+📋 *Reservation Details:*
+📅 Date: ${reservation.date}
+🕐 Time: ${reservation.time}
+👥 Pax: ${reservation.pax} people
+
+We hope everything is okay. If you'd like to reschedule, please contact us at +62 819-1900-1818.
+
+We look forward to serving you soon!
+
+_JA'AN Bali_
+📞 +62 819-1900-1818
+📷 @jaanbali`;
+
+      await sendWhatsAppMessage({
+        phoneNumber: reservation.phoneNumber,
+        message: noShowMessage,
+      });
+    }
+
+    res.json({
+      message: `Marked as ${showedUp ? 'showed up' : 'no-show'}`,
+      showedUp: reservation.showedUp,
+    });
+  } catch (err) {
+    console.error("Error updating show-up status:", err);
+    res.status(500).json({ message: err.message || "Internal server error" });
+  }
+};

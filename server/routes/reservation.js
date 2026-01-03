@@ -8,5 +8,6 @@ router.get("/", isAuthenticated, controller.getReservations);
 router.put("/confirm/:id", isAuthenticated, controller.confirmReservation);
 router.put("/reject/:id", isAuthenticated, controller.rejectReservation);
 router.post("/resend/:id", isAuthenticated, controller.resendConfirmation);
+router.put("/showup/:id", isAuthenticated, controller.updateShowUpStatus);
 
 module.exports = router;

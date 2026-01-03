@@ -15,7 +15,7 @@ export default function AdminReservationTable() {
   const { refreshCount } = useReservationRefresh();
   const [reservations, setReservations] = useState([]);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10); // Fixed per page
+  const [limit] = useState(8); // Fixed per page
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [confirmingId, setConfirmingId] = useState(null);
@@ -26,6 +26,7 @@ export default function AdminReservationTable() {
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [isRejecting, setIsRejecting] = useState(false);
   const [isResending, setIsResending] = useState(null);
+  const [isUpdatingShowUp, setIsUpdatingShowUp] = useState(null);
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -141,6 +142,29 @@ export default function AdminReservationTable() {
     }
   };
 
+  const handleShowUpStatus = async (reservation, showedUp) => {
+    try {
+      setIsUpdatingShowUp(reservation.id);
+      await api.put(`/reservations/showup/${reservation.id}`, {
+        showedUp: showedUp,
+      });
+
+      const statusText = showedUp ? "showed up" : "no-show";
+      toast.success(`✅ Marked as ${statusText}`);
+
+      // Update local state
+      const updated = reservations.map((r) =>
+        r.id === reservation.id ? { ...r, showedUp: showedUp } : r
+      );
+      setReservations(updated);
+    } catch (err) {
+      console.error(err.message);
+      toast.error("Failed to update show-up status.");
+    } finally {
+      setIsUpdatingShowUp(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -227,6 +251,8 @@ export default function AdminReservationTable() {
                 updateStatus={updateStatus}
                 handleResendConfirmation={handleResendConfirmation}
                 isResending={isResending}
+                handleShowUpStatus={handleShowUpStatus}
+                isUpdatingShowUp={isUpdatingShowUp}
               />
             ))}
           </div>
