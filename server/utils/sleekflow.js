@@ -93,7 +93,7 @@ function formatReservationMessage(reservation, pdfUrl) {
 
 Hi ${reservation.name},
 
-Your reservation at *JA'AN Restaurant* has been confirmed!
+Your reservation at *JA'AN Bali* has been confirmed!
 
 📋 *Reservation Details:*
 ━━━━━━━━━━━━━━━━━━━━
@@ -115,7 +115,7 @@ ${pdfUrl}
 
 Thank you for choosing JA'AN! We look forward to welcoming you! 🙏
 
-_JA'AN Restaurant_
+_JA'AN Bali_
 📍 Jl. Raya Seminyak No.10, Seminyak, Bali
 📞 +62 819-1900-1818
 📷 @jaanbali`;
@@ -153,7 +153,7 @@ We sincerely apologize for any inconvenience this may cause. Please feel free to
 
 We hope to serve you soon!
 
-_JA'AN Restaurant_
+_JA'AN Bali_
 📍 Jl. Raya Seminyak No.10, Seminyak, Bali
 📞 +62 819-1900-1818
 📷 @jaanbali`;
