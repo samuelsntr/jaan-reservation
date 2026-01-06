@@ -33,6 +33,14 @@ import { useDeleteDialog } from "@/hooks/useDeleteDialog";
 import { formatDate } from "@/lib/formatDate";
 import { cn } from "@/lib/utils";
 
+// Format date as YYYY-MM-DD in local timezone (not UTC)
+const formatDateLocal = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -61,8 +69,11 @@ export default function EventsPage() {
   const handleOpenForm = (event = null) => {
     if (event) {
       setSelectedEvent(event);
+      // Parse date string (YYYY-MM-DD) to local Date object
+      const [year, month, day] = event.date.split("-").map(Number);
+      const eventDate = new Date(year, month - 1, day);
       setFormData({
-        date: new Date(event.date),
+        date: eventDate,
         eventName: event.eventName,
         description: event.description || "",
       });
@@ -95,7 +106,7 @@ export default function EventsPage() {
     }
 
     try {
-      const dateString = formData.date.toISOString().split("T")[0];
+      const dateString = formatDateLocal(formData.date); // Format in local timezone
       if (selectedEvent) {
         await api.put(`/events/${selectedEvent.id}`, {
           date: dateString,
@@ -170,7 +181,9 @@ export default function EventsPage() {
               </TableHeader>
               <TableBody>
                 {sortedEvents.map((event) => {
-                  const eventDate = new Date(event.date);
+                  // Parse date string (YYYY-MM-DD) to local Date object
+                  const [year, month, day] = event.date.split("-").map(Number);
+                  const eventDate = new Date(year, month - 1, day);
                   const dayNames = [
                     "Sunday",
                     "Monday",

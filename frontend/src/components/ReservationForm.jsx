@@ -14,7 +14,6 @@ import {
   Table as TableIcon,
   ChevronDown,
 } from "lucide-react";
-import { formatDate } from "@/lib/formatDate";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import {
@@ -89,6 +88,14 @@ const getDefaultEventName = (date) => {
   return `Ja'an Bali ${dayName}`;
 };
 
+// Format date as YYYY-MM-DD in local timezone (not UTC)
+const formatDateLocal = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export default function ReservationForm() {
   // Set today as default date
   const today = new Date();
@@ -131,7 +138,7 @@ export default function ReservationForm() {
 
   // Get event name for a date
   const getEventName = (date) => {
-    const dateString = date.toISOString().split("T")[0];
+    const dateString = formatDateLocal(date);
     const event = events.find((e) => e.date === dateString);
     return event ? event.eventName : getDefaultEventName(date);
   };
@@ -192,7 +199,7 @@ export default function ReservationForm() {
       setSubmitting(true);
       await api.post("/reservations", {
         ...form,
-        date: form.date.toISOString().split("T")[0], // Format as YYYY-MM-DD
+        date: formatDateLocal(form.date), // Format as YYYY-MM-DD in local timezone
         pax: parseInt(form.pax),
         phoneNumber: form.phoneNumber.replace(/\D/g, ""), // Clean phone number
       });
@@ -278,8 +285,7 @@ export default function ReservationForm() {
                           "p-3 md:p-4 cursor-pointer transition-all duration-300 border-2 hover:scale-105 hover:shadow-lg flex-shrink-0 w-40 md:w-auto min-h-[100px] md:min-h-0",
                           isSelected
                             ? "border-amber-500 bg-amber-500/20 shadow-lg shadow-amber-500/20"
-                            : "border-gray-700 bg-gray-700/50 hover:border-amber-600/50",
-                          isToday && "ring-2 ring-amber-400/50"
+                            : "border-gray-700 bg-gray-700/50 hover:border-amber-600/50"
                         )}
                         onClick={() => handleDateSelect(date)}
                       >
