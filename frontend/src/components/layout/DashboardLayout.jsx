@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }) {
   });
 
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <SidebarProvider>
         <AppSidebar />
         <SidebarTrigger />

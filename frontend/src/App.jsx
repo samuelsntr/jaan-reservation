@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UsersPage from "./pages/Users";
+import EventsPage from "./pages/Events";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ReservationPage from "./pages/Reservation";
 import ReservationTablePage from "./pages/ReservationTablePage";
@@ -47,6 +48,14 @@ function App() {
           element={
             <ProtectedRoute>
               <UsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute>
+              <EventsPage />
             </ProtectedRoute>
           }
         />

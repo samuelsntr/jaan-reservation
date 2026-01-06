@@ -1,4 +1,4 @@
-import { Home, Calendar, Users, LogOut } from "lucide-react";
+import { Home, Calendar, Users, LogOut, CalendarDays } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { ModeToggle } from "../mode-toggle";
 
 // Define navigation items
 const primaryNavigation = [
@@ -27,6 +26,11 @@ const adminNavigation = [
     title: "Dashboard",
     icon: Home,
     url: "/dashboard",
+  },
+  {
+    title: "Events Calendar",
+    icon: CalendarDays,
+    url: "/events",
   },
   {
     title: "User Management",
@@ -48,9 +52,6 @@ export function AppSidebar() {
     <Sidebar className="h-screen flex flex-col">
       <SidebarContent className="flex-grow">
         {/* Application Navigation */}
-        <div className="ml-4 mt-3">
-          <ModeToggle />
-        </div>
         <SidebarGroup>
           <SidebarGroupLabel>General</SidebarGroupLabel>
           <SidebarGroupContent>

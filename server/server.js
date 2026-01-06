@@ -7,6 +7,7 @@ const userRoutes = require("./routes/user");
 const db = require("./models");
 const reservationRoutes = require("./routes/reservation");
 const dashboardRoutes = require("./routes/dashboard");
+const eventRoutes = require("./routes/event");
 const app = express();
 const path = require("path");
 const httpServer = require("http").createServer(app);
@@ -51,11 +52,14 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reservations", reservationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/events", eventRoutes);
 
 // Test route
 app.get("/", (req, res) => res.send("Jaan Reservation API running"));
 
 // // Connect to DB and sync
+// Note: alter: true will create new tables automatically
+// Change to alter: false in production after initial setup
 db.sequelize.sync({ alter: false }).then(() => {
   console.log("Database connected and tables synced!");
 });
